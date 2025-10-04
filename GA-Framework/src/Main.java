@@ -101,18 +101,24 @@ public class Main {
 
         return new InstanceParameters[] {
             // PADRÃO: população 100, mutação 1%, construção aleatória
-            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds),
+            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + POP: população 1000, mutação 1%, construção aleatória
-            new InstanceParameters(maxGenerations, population2, mutationRate1, timeoutInSeconds),
+            new InstanceParameters(maxGenerations, population2, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + MUT: população 100, mutação 10%, construção aleatória
-            new InstanceParameters(maxGenerations, population1, mutationRate2, timeoutInSeconds),
+            new InstanceParameters(maxGenerations, population1, mutationRate2, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + EVOL1: população 100, mutação 1%, construção alternativa 1
             // @TODO: Implementar construção alternativa 1
-            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds),
+            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL1),
             // PADRÃO + EVOL2: população 100, mutação 1%, construção alternativa 2
-            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds),
+            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL2),
         };
     }
+}
+
+enum StrategyEnum {
+    RANDOM,
+    EVOL1,
+    EVOL2
 }
 
 class InstanceParameters {
@@ -120,22 +126,33 @@ class InstanceParameters {
     protected Integer populationSize;
     protected Double mutationRate;
     protected Long timeoutInSeconds;
+    protected StrategyEnum strategy;
 
-    public InstanceParameters(Integer maxGenerations, Integer populationSize, Double mutationRate, Long timeoutInSeconds) {
+    public InstanceParameters(Integer maxGenerations, Integer populationSize, Double mutationRate, Long timeoutInSeconds, StrategyEnum strategy) {
         this.maxGenerations = maxGenerations;
         this.populationSize = populationSize;
         this.mutationRate = mutationRate;
         this.timeoutInSeconds = timeoutInSeconds;
+        this.strategy = strategy;
     }
 
     public GA_QBF_SC createSolver(String filename, Logger logger) throws Exception {
-        GA_QBF_SC solver = new GA_QBF_SC(maxGenerations, populationSize, mutationRate, filename, timeoutInSeconds);
+        GA_QBF_SC solver;
+        if (strategy == StrategyEnum.RANDOM) {
+            solver = new GA_QBF_SC(maxGenerations, populationSize, mutationRate, filename, timeoutInSeconds);
+        } else if (strategy == StrategyEnum.EVOL1) {
+            throw new UnsupportedOperationException("Strategy EVOL1 not implemented yet.");
+        } else if (strategy == StrategyEnum.EVOL2) {
+            throw new UnsupportedOperationException("Strategy EVOL2 not implemented yet.");
+        } else {
+            throw new IllegalArgumentException("Unknown strategy: " + strategy);
+        }
         solver.setLogger(logger);
         return solver;
     }
 
     @Override
     public String toString() {
-        return "maxGenerations=" + maxGenerations + ", populationSize=" + populationSize + ", mutationRate=" + mutationRate + ", timeoutInSeconds=" + timeoutInSeconds;
+        return "maxGenerations=" + maxGenerations + ", populationSize=" + populationSize + ", mutationRate=" + mutationRate + ", timeoutInSeconds=" + timeoutInSeconds + ", strategy=" + strategy;
     }
 }
