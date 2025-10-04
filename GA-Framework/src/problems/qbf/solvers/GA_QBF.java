@@ -31,8 +31,8 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
 	 * @throws IOException
 	 *             Necessary for I/O operations.
 	 */
-	public GA_QBF(Integer generations, Integer popSize, Double mutationRate, String filename) throws IOException {
-		super(new QBF_Inverse(filename), generations, popSize, mutationRate);
+	public GA_QBF(Integer generations, Integer popSize, Double mutationRate, String filename, Integer timeoutInSeconds) throws IOException {
+		super(new QBF_Inverse(filename), generations, popSize, mutationRate, timeoutInSeconds);
 	}
 
     /**
@@ -44,8 +44,8 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
      * @param popSize Size of the population.
      * @param mutationRate The mutation rate.
      */
-    public GA_QBF(QBF objFunction, Integer generations, Integer popSize, Double mutationRate) {
-        super(objFunction, generations, popSize, mutationRate);
+    public GA_QBF(QBF objFunction, Integer generations, Integer popSize, Double mutationRate, Integer timeoutInSeconds) {
+        super(objFunction, generations, popSize, mutationRate, timeoutInSeconds);
     }
 
 	/**
@@ -132,7 +132,7 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
 	public static void main(String[] args) throws IOException {
 
 		long startTime = System.currentTimeMillis();
-		GA_QBF ga = new GA_QBF(1000, 100, 1.0 / 100.0, "instances/qbf/qbf100");
+		GA_QBF ga = new GA_QBF(1000, 100, 1.0 / 100.0, "GA-Framework/instances/qbf/qbf100", null);
 		Solution<Integer> bestSol = ga.solve();
 		System.out.println("maxVal = " + bestSol);
 		long endTime = System.currentTimeMillis();

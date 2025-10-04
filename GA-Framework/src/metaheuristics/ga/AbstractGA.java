@@ -79,6 +79,8 @@ public abstract class AbstractGA<G extends Number, F> {
 	 */
 	protected Chromosome bestChromosome;
 
+    protected Integer timeoutInSeconds;
+
 	/**
 	 * Creates a new solution which is empty, i.e., does not contain any
 	 * candidate solution element.
@@ -140,12 +142,13 @@ public abstract class AbstractGA<G extends Number, F> {
 	 * @param mutationRate
 	 *            The mutation rate.
 	 */
-	public AbstractGA(Evaluator<F> objFunction, Integer generations, Integer popSize, Double mutationRate) {
+	public AbstractGA(Evaluator<F> objFunction, Integer generations, Integer popSize, Double mutationRate, Integer timeoutInSeconds) {
 		this.ObjFunction = objFunction;
 		this.generations = generations;
 		this.popSize = popSize;
 		this.chromosomeSize = this.ObjFunction.getDomainSize();
 		this.mutationRate = mutationRate;
+        this.timeoutInSeconds = timeoutInSeconds;
 	}
 
 	/**
@@ -164,6 +167,8 @@ public abstract class AbstractGA<G extends Number, F> {
 		bestChromosome = getBestChromosome(population);
 		bestSol = decode(bestChromosome);
 		System.out.println("(Gen. " + 0 + ") BestSol = " + bestSol);
+
+        long startTime = System.currentTimeMillis();
 
 		/*
 		 * enters the main loop and repeats until a given number of generations
@@ -188,7 +193,12 @@ public abstract class AbstractGA<G extends Number, F> {
 				if (verbose)
 					System.out.println("(Gen. " + currentGeneration + ") BestSol = " + bestSol);
 			}
-
+            
+            long currentTime = System.currentTimeMillis();
+            if (timeoutInSeconds != null && (currentTime - startTime) >= timeoutInSeconds * 1000) {
+                System.out.println("Timeout reached after " + timeoutInSeconds + " seconds.");
+                break;
+            }
 		}
 
 		return bestSol;

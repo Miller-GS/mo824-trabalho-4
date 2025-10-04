@@ -24,8 +24,14 @@ public class GA_QBF_SC extends GA_QBF {
 	 * @throws IOException
 	 *             Necessary for I/O operations.
 	 */
-	public GA_QBF_SC(Integer generations, Integer popSize, Double mutationRate, String filename) throws IOException {
-		super(new QBF_SC_Inverse(filename), generations, popSize, mutationRate);
+	public GA_QBF_SC(
+        Integer generations,
+        Integer popSize,
+        Double mutationRate,
+        String filename,
+        Integer timeoutInSeconds
+    ) throws IOException {
+		super(new QBF_SC_Inverse(filename), generations, popSize, mutationRate, timeoutInSeconds);
 		qbfSC = (QBF_SC_Inverse) this.ObjFunction;
 	}
 
@@ -48,9 +54,9 @@ public class GA_QBF_SC extends GA_QBF {
 	 * 
 	 */
 	public static void main(String[] args) throws IOException {
-
+        Integer timeoutInSeconds = 60;
 		long startTime = System.currentTimeMillis();
-		GA_QBF_SC ga = new GA_QBF_SC(10000, 100, 1.0 / 100.0, "GA-Framework/instances/qbf-sc/instance_7.txt");
+		GA_QBF_SC ga = new GA_QBF_SC(10000, 100, 1.0 / 100.0, "GA-Framework/instances/qbf-sc/instance_7.txt", timeoutInSeconds);
 		Solution<Integer> bestSol = ga.solve();
 		System.out.println("maxVal = " + bestSol);
 		long endTime = System.currentTimeMillis();
