@@ -93,7 +93,7 @@ public class Main {
 
     protected static InstanceParameters[] listParameters() {
         Integer maxGenerations = Integer.MAX_VALUE; // Run until timeout
-        Long timeoutInSeconds = 1L * 30L; // 30 minutes
+        Long timeoutInSeconds = 60L * 30L; // 30 minutes
         Integer population1 = 100;
         Integer population2 = 1000;
         Double mutationRate1 = 1.0 / 100.0;
@@ -101,6 +101,15 @@ public class Main {
 
         return new InstanceParameters[] {
             // PADRÃO: população 100, mutação 1%, construção aleatória
+            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds),
+            // PADRÃO + POP: população 1000, mutação 1%, construção aleatória
+            new InstanceParameters(maxGenerations, population2, mutationRate1, timeoutInSeconds),
+            // PADRÃO + MUT: população 100, mutação 10%, construção aleatória
+            new InstanceParameters(maxGenerations, population1, mutationRate2, timeoutInSeconds),
+            // PADRÃO + EVOL1: população 100, mutação 1%, construção alternativa 1
+            // @TODO: Implementar construção alternativa 1
+            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds),
+            // PADRÃO + EVOL2: população 100, mutação 1%, construção alternativa 2
             new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds),
         };
     }
