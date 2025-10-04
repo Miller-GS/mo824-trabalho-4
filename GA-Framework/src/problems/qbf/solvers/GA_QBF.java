@@ -31,7 +31,7 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
 	 * @throws IOException
 	 *             Necessary for I/O operations.
 	 */
-	public GA_QBF(Integer generations, Integer popSize, Double mutationRate, String filename, Integer timeoutInSeconds) throws IOException {
+	public GA_QBF(Integer generations, Integer popSize, Double mutationRate, String filename, Long timeoutInSeconds) throws IOException {
 		super(new QBF_Inverse(filename), generations, popSize, mutationRate, timeoutInSeconds);
 	}
 
@@ -44,7 +44,7 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
      * @param popSize Size of the population.
      * @param mutationRate The mutation rate.
      */
-    public GA_QBF(QBF objFunction, Integer generations, Integer popSize, Double mutationRate, Integer timeoutInSeconds) {
+    public GA_QBF(QBF objFunction, Integer generations, Integer popSize, Double mutationRate, Long timeoutInSeconds) {
         super(objFunction, generations, popSize, mutationRate, timeoutInSeconds);
     }
 

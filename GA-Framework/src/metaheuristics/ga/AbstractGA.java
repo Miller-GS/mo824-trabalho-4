@@ -79,7 +79,7 @@ public abstract class AbstractGA<G extends Number, F> {
 	 */
 	protected Chromosome bestChromosome;
 
-    protected Integer timeoutInSeconds;
+    protected Long timeoutInSeconds;
 
 	/**
 	 * Creates a new solution which is empty, i.e., does not contain any
@@ -142,7 +142,7 @@ public abstract class AbstractGA<G extends Number, F> {
 	 * @param mutationRate
 	 *            The mutation rate.
 	 */
-	public AbstractGA(Evaluator<F> objFunction, Integer generations, Integer popSize, Double mutationRate, Integer timeoutInSeconds) {
+	public AbstractGA(Evaluator<F> objFunction, Integer generations, Integer popSize, Double mutationRate, Long timeoutInSeconds) {
 		this.ObjFunction = objFunction;
 		this.generations = generations;
 		this.popSize = popSize;

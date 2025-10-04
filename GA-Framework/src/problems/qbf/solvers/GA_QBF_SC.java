@@ -29,7 +29,7 @@ public class GA_QBF_SC extends GA_QBF {
         Integer popSize,
         Double mutationRate,
         String filename,
-        Integer timeoutInSeconds
+        Long timeoutInSeconds
     ) throws IOException {
 		super(new QBF_SC_Inverse(filename), generations, popSize, mutationRate, timeoutInSeconds);
 		qbfSC = (QBF_SC_Inverse) this.ObjFunction;
