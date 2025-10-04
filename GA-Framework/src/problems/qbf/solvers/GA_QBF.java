@@ -3,6 +3,7 @@ package problems.qbf.solvers;
 import java.io.IOException;
 import metaheuristics.ga.AbstractGA;
 import problems.qbf.QBF;
+import problems.qbf.QBF_Inverse;
 import solutions.Solution;
 
 /**
@@ -31,8 +32,21 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
 	 *             Necessary for I/O operations.
 	 */
 	public GA_QBF(Integer generations, Integer popSize, Double mutationRate, String filename) throws IOException {
-		super(new QBF(filename), generations, popSize, mutationRate);
+		super(new QBF_Inverse(filename), generations, popSize, mutationRate);
 	}
+
+    /**
+     * Constructor for the GA_QBF class. The QBF objective function is passed as
+     * argument for the superclass constructor
+     * 
+     * @param objFunction The QBF objective function.
+     * @param generations Maximum number of generations.
+     * @param popSize Size of the population.
+     * @param mutationRate The mutation rate.
+     */
+    public GA_QBF(QBF objFunction, Integer generations, Integer popSize, Double mutationRate) {
+        super(objFunction, generations, popSize, mutationRate);
+    }
 
 	/**
 	 * {@inheritDoc}

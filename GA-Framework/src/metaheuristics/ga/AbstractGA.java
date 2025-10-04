@@ -47,6 +47,8 @@ public abstract class AbstractGA<G extends Number, F> {
 	 */
 	protected int generations;
 
+    protected int currentGeneration;
+
 	/**
 	 * the size of the population
 	 */
@@ -166,7 +168,7 @@ public abstract class AbstractGA<G extends Number, F> {
 		/*
 		 * enters the main loop and repeats until a given number of generations
 		 */
-		for (int g = 1; g <= generations; g++) {
+		for (currentGeneration = 1; currentGeneration <= generations; currentGeneration++) {
 
 			Population parents = selectParents(population);
 
@@ -179,11 +181,12 @@ public abstract class AbstractGA<G extends Number, F> {
 			population = newpopulation;
 
 			bestChromosome = getBestChromosome(population);
+            Solution<F> bestSolCurrentGen = decode(bestChromosome);
 
-			if (fitness(bestChromosome) > bestSol.cost) {
-				bestSol = decode(bestChromosome);
+			if (bestSolCurrentGen.cost < bestSol.cost) {
+				bestSol = bestSolCurrentGen;
 				if (verbose)
-					System.out.println("(Gen. " + g + ") BestSol = " + bestSol);
+					System.out.println("(Gen. " + currentGeneration + ") BestSol = " + bestSol);
 			}
 
 		}
