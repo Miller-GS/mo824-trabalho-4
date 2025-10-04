@@ -7,6 +7,8 @@ import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.util.HashSet;
 
+import solutions.Solution;
+
 public class QBF_SC_Inverse extends QBF_Inverse {
     protected HashSet<Integer>[] sets;
     protected double coefficientsMagnitude;
@@ -114,5 +116,11 @@ public class QBF_SC_Inverse extends QBF_Inverse {
             }
         }
         return size - covered.size();
+    }
+
+    @Override
+    public boolean isFeasible(Solution<Integer> sol) {
+        setVariables(sol);
+        return countUncoveredElements() == 0;
     }
 }

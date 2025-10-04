@@ -192,7 +192,7 @@ public abstract class AbstractGA<G extends Number, F> {
 			bestChromosome = getBestChromosome(population);
             Solution<F> bestSolCurrentGen = decode(bestChromosome);
 
-			if (bestSolCurrentGen.cost < bestSol.cost) {
+			if (bestSolCurrentGen.cost < bestSol.cost && ObjFunction.isFeasible(bestSolCurrentGen)) {
 				bestSol = bestSolCurrentGen;
 				if (verbose)
 					logger.info("(Gen. " + currentGeneration + ") BestSol = " + bestSol);
@@ -204,6 +204,10 @@ public abstract class AbstractGA<G extends Number, F> {
                 break;
             }
 		}
+
+        if (!ObjFunction.isFeasible(bestSol)) {
+            throw new RuntimeException("No feasible solution found.");
+        }
 
 		return bestSol;
 	}

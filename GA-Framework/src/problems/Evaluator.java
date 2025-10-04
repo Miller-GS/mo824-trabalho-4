@@ -31,6 +31,8 @@ public interface Evaluator<E> {
 	 */
 	public abstract Double evaluate(Solution<E> sol);
 
+    public abstract boolean isFeasible(Solution<E> sol);
+
 	/**
 	 * Evaluates the cost variation of inserting an element into a solution
 	 * according to an objective function.

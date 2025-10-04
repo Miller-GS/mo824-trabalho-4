@@ -325,6 +325,11 @@ public class QBF implements Evaluator<Integer> {
 
 	}
 
+    @Override
+    public boolean isFeasible(Solution<Integer> sol) {
+        return true; // A QBF has no constraints, so all solutions are feasible
+    }
+
 	/**
 	 * A main method for testing the QBF class.
 	 * 
