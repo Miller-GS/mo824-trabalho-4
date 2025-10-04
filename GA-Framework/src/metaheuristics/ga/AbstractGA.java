@@ -2,6 +2,7 @@ package metaheuristics.ga;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import problems.Evaluator;
 import solutions.Solution;
@@ -81,6 +82,8 @@ public abstract class AbstractGA<G extends Number, F> {
 
     protected Long timeoutInSeconds;
 
+    protected Logger logger;
+
 	/**
 	 * Creates a new solution which is empty, i.e., does not contain any
 	 * candidate solution element.
@@ -149,6 +152,7 @@ public abstract class AbstractGA<G extends Number, F> {
 		this.chromosomeSize = this.ObjFunction.getDomainSize();
 		this.mutationRate = mutationRate;
         this.timeoutInSeconds = timeoutInSeconds;
+        this.logger = Logger.getLogger(AbstractGA.class.getName());
 	}
 
 	/**
@@ -166,7 +170,7 @@ public abstract class AbstractGA<G extends Number, F> {
 
 		bestChromosome = getBestChromosome(population);
 		bestSol = decode(bestChromosome);
-		System.out.println("(Gen. " + 0 + ") BestSol = " + bestSol);
+		logger.info("(Gen. " + 0 + ") BestSol = " + bestSol);
 
         long startTime = System.currentTimeMillis();
 
@@ -191,18 +195,23 @@ public abstract class AbstractGA<G extends Number, F> {
 			if (bestSolCurrentGen.cost < bestSol.cost) {
 				bestSol = bestSolCurrentGen;
 				if (verbose)
-					System.out.println("(Gen. " + currentGeneration + ") BestSol = " + bestSol);
+					logger.info("(Gen. " + currentGeneration + ") BestSol = " + bestSol);
 			}
             
             long currentTime = System.currentTimeMillis();
             if (timeoutInSeconds != null && (currentTime - startTime) >= timeoutInSeconds * 1000) {
-                System.out.println("Timeout reached after " + timeoutInSeconds + " seconds.");
+                logger.warning("Timeout reached after " + timeoutInSeconds + " seconds.");
                 break;
             }
 		}
 
 		return bestSol;
 	}
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+    
 
 	/**
 	 * Randomly generates an initial population to start the GA.

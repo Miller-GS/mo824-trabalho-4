@@ -1,5 +1,6 @@
 
 import problems.qbf.solvers.GA_QBF_SC;
+import solutions.Solution;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -31,10 +32,11 @@ public class Main {
 
                     logger.info("Solving instance " + instance + " with parameters: " + param);
                     
-                    solver.solve();
+                    Solution<Integer> bestSol = solver.solve();
                     long endTime = System.currentTimeMillis();
                     long executionTime = endTime - startTime;
                     
+                    logger.info("maxVal = " + bestSol);
                     logger.info("Solution found in " + executionTime + " ms");
                     logger.info("Instance " + instance + " completed successfully\n");
                     
@@ -90,7 +92,7 @@ public class Main {
     }
 
     protected static InstanceParameters[] listParameters() {
-        Integer iterations = Integer.MAX_VALUE; // Run until timeout
+        Integer maxGenerations = Integer.MAX_VALUE; // Run until timeout
         Long timeoutInSeconds = 1L * 30L; // 30 minutes
         Integer population1 = 100;
         Integer population2 = 1000;
@@ -99,7 +101,7 @@ public class Main {
 
         return new InstanceParameters[] {
             // PADRÃO: população 100, mutação 1%, construção aleatória
-            new InstanceParameters(10000, population1, mutationRate1, timeoutInSeconds),
+            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds),
         };
     }
 }
@@ -119,6 +121,7 @@ class InstanceParameters {
 
     public GA_QBF_SC createSolver(String filename, Logger logger) throws Exception {
         GA_QBF_SC solver = new GA_QBF_SC(maxGenerations, populationSize, mutationRate, filename, timeoutInSeconds);
+        solver.setLogger(logger);
         return solver;
     }
 
