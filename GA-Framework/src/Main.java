@@ -1,5 +1,6 @@
 import problems.qbf.solvers.GA_QBF_SC;
 import problems.qbf.solvers.GA_QBF_SC_LHS;
+import problems.qbf.solvers.GA_QBF_SC_AdaptiveMutation;
 import solutions.Solution;
 
 import java.io.IOException;
@@ -160,7 +161,7 @@ public class Main {
             new InstanceParameters(maxGenerations, population1, mutationRate2, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + EVOL1 (Latin Hypercube): população 100, mutação 1%, construção alternativa 1
             new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL1),
-            // PADRÃO + EVOL2: população 100, mutação 1%, construção alternativa 2
+            // PADRÃO + EVOL2 (Adaptive Mutation): população 100, mutação 1%, construção alternativa 2
             new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL2),
         };
     }
@@ -169,7 +170,7 @@ public class Main {
 enum StrategyEnum {
     RANDOM,
     EVOL1, // Latin Hypercube
-    EVOL2
+    EVOL2  // Adaptive Mutation
 }
 
 class InstanceParameters {
@@ -194,7 +195,7 @@ class InstanceParameters {
         } else if (strategy == StrategyEnum.EVOL1) { // Latin Hypercube
             solver = new GA_QBF_SC_LHS(maxGenerations, populationSize, mutationRate, filename, timeoutInSeconds);
         } else if (strategy == StrategyEnum.EVOL2) {
-            throw new UnsupportedOperationException("Strategy EVOL2 not implemented yet.");
+            solver = new GA_QBF_SC_AdaptiveMutation(maxGenerations, populationSize, mutationRate, filename, timeoutInSeconds);
         } else {
             throw new IllegalArgumentException("Unknown strategy: " + strategy);
         }
