@@ -74,7 +74,7 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
 		Solution<Integer> solution = createEmptySol();
 		for (int locus = 0; locus < chromosome.size(); locus++) {
 			if (chromosome.get(locus) == 1) {
-				solution.add(new Integer(locus));
+				solution.add(locus);
 			}
 		}
 

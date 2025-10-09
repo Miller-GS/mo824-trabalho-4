@@ -1,5 +1,5 @@
-
 import problems.qbf.solvers.GA_QBF_SC;
+import problems.qbf.solvers.GA_QBF_SC_LHS;
 import solutions.Solution;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class Main {
         String[] instances = listInstances();
         InstanceParameters[] parameters = listParameters();
 
-        logger.info("Starting GRASP QBF-SC solver execution");
+        logger.info("Starting Genetic Algorithm QBF-SC solver execution");
         logger.info("Number of instances: " + instances.length);
         logger.info("Number of parameter configurations: " + parameters.length);
 
@@ -99,7 +99,7 @@ public class Main {
             Thread.currentThread().interrupt();
         }
         
-        logger.info("GRASP QBF-SC solver execution completed");
+        logger.info("Genetic Algorithm QBF-SC solver execution completed");
     }
     
     private static void setupLogger() {
@@ -135,7 +135,7 @@ public class Main {
     }
     
     protected static String[] listInstances() {
-        int nInstances = 11;
+        int nInstances = 15;
         String[] instances = new String[nInstances];
         for (int i = 0; i < nInstances; i++) {
             instances[i] = "GA-Framework/instances/qbf-sc/instance_" + (i + (15 - nInstances)) + ".txt";
@@ -158,8 +158,7 @@ public class Main {
             new InstanceParameters(maxGenerations, population2, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + MUT: população 100, mutação 10%, construção aleatória
             new InstanceParameters(maxGenerations, population1, mutationRate2, timeoutInSeconds, StrategyEnum.RANDOM),
-            // PADRÃO + EVOL1: população 100, mutação 1%, construção alternativa 1
-            // @TODO: Implementar construção alternativa 1
+            // PADRÃO + EVOL1 (Latin Hypercube): população 100, mutação 1%, construção alternativa 1
             new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL1),
             // PADRÃO + EVOL2: população 100, mutação 1%, construção alternativa 2
             new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL2),
@@ -169,7 +168,7 @@ public class Main {
 
 enum StrategyEnum {
     RANDOM,
-    EVOL1,
+    EVOL1, // Latin Hypercube
     EVOL2
 }
 
@@ -192,8 +191,8 @@ class InstanceParameters {
         GA_QBF_SC solver;
         if (strategy == StrategyEnum.RANDOM) {
             solver = new GA_QBF_SC(maxGenerations, populationSize, mutationRate, filename, timeoutInSeconds);
-        } else if (strategy == StrategyEnum.EVOL1) {
-            throw new UnsupportedOperationException("Strategy EVOL1 not implemented yet.");
+        } else if (strategy == StrategyEnum.EVOL1) { // Latin Hypercube
+            solver = new GA_QBF_SC_LHS(maxGenerations, populationSize, mutationRate, filename, timeoutInSeconds);
         } else if (strategy == StrategyEnum.EVOL2) {
             throw new UnsupportedOperationException("Strategy EVOL2 not implemented yet.");
         } else {
