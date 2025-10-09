@@ -5,6 +5,12 @@ import solutions.Solution;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -24,27 +30,73 @@ public class Main {
         logger.info("Number of instances: " + instances.length);
         logger.info("Number of parameter configurations: " + parameters.length);
 
-        for (String instance : instances) {
-            for (InstanceParameters param : parameters) {
-                try {
-                    GA_QBF_SC solver = param.createSolver(instance, logger);
-                    long startTime = System.currentTimeMillis();
+        // Create a thread pool with 5 threads (one for each parameter configuration)
+        ExecutorService executor = Executors.newFixedThreadPool(3);
 
-                    logger.info("Solving instance " + instance + " with parameters: " + param);
-                    
-                    Solution<Integer> bestSol = solver.solve();
-                    long endTime = System.currentTimeMillis();
-                    long executionTime = endTime - startTime;
-                    
-                    logger.info("maxVal = " + bestSol);
-                    logger.info("Solution found in " + executionTime + " ms");
-                    logger.info("Instance " + instance + " completed successfully\n");
-                    
-                } catch (Exception e) {
-                    logger.severe("Error solving instance " + instance + " with parameters: " + e.getMessage());
-                    logger.severe("Stack trace: " + java.util.Arrays.toString(e.getStackTrace()));
-                }
+        for (String instance : instances) {
+            logger.info("Processing instance: " + instance);
+            
+            // Create a list to hold all futures for this instance
+            List<Future<Void>> futures = new ArrayList<>();
+            
+            // Submit all parameter configurations for this instance to run in parallel
+            for (InstanceParameters param : parameters) {
+                Future<Void> future = executor.submit(() -> {
+                    try {
+                        GA_QBF_SC solver = param.createSolver(instance, logger);
+                        long startTime = System.currentTimeMillis();
+
+                        // Create a thread-safe log message prefix
+                        String logPrefix = "[" + Thread.currentThread().getName() + "] Instance " + instance + " - ";
+                        
+                        synchronized (logger) {
+                            logger.info(logPrefix + "Starting with parameters: " + param);
+                        }
+                        
+                        Solution<Integer> bestSol = solver.solve();
+                        long endTime = System.currentTimeMillis();
+                        long executionTime = endTime - startTime;
+                        
+                        synchronized (logger) {
+                            logger.info(logPrefix + "maxVal = " + bestSol);
+                            logger.info(logPrefix + "Solution found in " + executionTime + " ms");
+                            logger.info(logPrefix + "Completed successfully");
+                        }
+                        
+                    } catch (Exception e) {
+                        synchronized (logger) {
+                            logger.severe("[" + Thread.currentThread().getName() + "] Error solving instance " + 
+                                        instance + " with parameters " + param + ": " + e.getMessage());
+                            logger.severe("[" + Thread.currentThread().getName() + "] Stack trace: " + 
+                                        java.util.Arrays.toString(e.getStackTrace()));
+                        }
+                    }
+                    return null;
+                });
+                futures.add(future);
             }
+            
+            // Wait for all parameter configurations for this instance to complete
+            try {
+                for (Future<Void> future : futures) {
+                    future.get(); // This will block until the task completes
+                }
+                logger.info("All parameter configurations completed for instance: " + instance + "\n");
+            } catch (Exception e) {
+                logger.severe("Error waiting for tasks to complete for instance " + instance + ": " + e.getMessage());
+            }
+        }
+        
+        // Shutdown the executor
+        executor.shutdown();
+        try {
+            // Wait up to 60 seconds for remaining tasks to complete
+            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
         }
         
         logger.info("GRASP QBF-SC solver execution completed");
@@ -83,10 +135,10 @@ public class Main {
     }
     
     protected static String[] listInstances() {
-        int nInstances = 1;
+        int nInstances = 11;
         String[] instances = new String[nInstances];
         for (int i = 0; i < nInstances; i++) {
-            instances[i] = "GA-Framework/instances/qbf-sc/instance_" + i + ".txt";
+            instances[i] = "GA-Framework/instances/qbf-sc/instance_" + (i + (15 - nInstances)) + ".txt";
         }
         return instances;
     }
