@@ -34,14 +34,14 @@ public class Main {
         // Create a thread pool with 5 threads (one for each parameter configuration)
         ExecutorService executor = Executors.newFixedThreadPool(5);
 
-        for (String instance : instances) {
-            logger.info("Processing instance: " + instance);
+        for (InstanceParameters param : parameters) {
+            logger.info("Starting with parameters: " + param);            
             
             // Create a list to hold all futures for this instance
             List<Future<Void>> futures = new ArrayList<>();
             
             // Submit all parameter configurations for this instance to run in parallel
-            for (InstanceParameters param : parameters) {
+            for (String instance : instances) {
                 Future<Void> future = executor.submit(() -> {
                     try {
                         // Create a thread-safe log message prefix
@@ -50,7 +50,7 @@ public class Main {
                         long startTime = System.currentTimeMillis();
                         
                         synchronized (logger) {
-                            logger.info(logPrefix + "Starting with parameters: " + param);
+                            logger.info(logPrefix + "Starting instance: " + instance);
                         }
                         
                         Solution<Integer> bestSol = solver.solve();
@@ -81,9 +81,9 @@ public class Main {
                 for (Future<Void> future : futures) {
                     future.get(); // This will block until the task completes
                 }
-                logger.info("All parameter configurations completed for instance: " + instance + "\n");
+                logger.info("All parameter configurations completed for parameters: " + param + "\n");
             } catch (Exception e) {
-                logger.severe("Error waiting for tasks to complete for instance " + instance + ": " + e.getMessage());
+                logger.severe("Error waiting for tasks to complete for parameters " + param + ": " + e.getMessage());
             }
         }
         
@@ -154,13 +154,13 @@ public class Main {
 
         return new InstanceParameters[] {
             // PADRÃO: população 100, mutação 1%, construção aleatória
-            new InstanceParameters("PADRAO", maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
+            // new InstanceParameters("PADRAO", maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + POP: população 1000, mutação 1%, construção aleatória
-            new InstanceParameters("PADRAO_POP", maxGenerations, population2, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
+            // new InstanceParameters("PADRAO_POP", maxGenerations, population2, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + MUT: população 100, mutação 10%, construção aleatória
-            new InstanceParameters("PADRAO_MUT", maxGenerations, population1, mutationRate2, timeoutInSeconds, StrategyEnum.RANDOM),
+            // new InstanceParameters("PADRAO_MUT", maxGenerations, population1, mutationRate2, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + EVOL1 (Latin Hypercube): população 100, mutação 1%, construção alternativa 1
-            new InstanceParameters("PADRAO_EVOL1", maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL1),
+            // new InstanceParameters("PADRAO_EVOL1", maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL1),
             // PADRÃO + EVOL2 (Adaptive Mutation): população 100, mutação 1%, construção alternativa 2
             new InstanceParameters("PADRAO_EVOL2", maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL2),
         };
