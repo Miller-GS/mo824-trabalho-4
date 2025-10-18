@@ -40,10 +40,16 @@ public class GA_QBF_SC_AdaptiveMutation extends GA_QBF_SC
             // exploration
             if (bestSolCurrentGen.cost < bestSol.cost)
             {
-                bestSol = bestSolCurrentGen;
+                if (ObjFunction.isFeasible(bestSolCurrentGen)) {
+                    bestSol = bestSolCurrentGen;
+                    if (verbose)
+					    logger.info(logPrefix + "(Gen. " + currentGeneration + ") BestSol = " + bestSol);
+                }
+                
                 generationsWithoutImprovementsCounter = 0;
+                double previousMutationRate = mutationRate;
                 mutationRate = Math.max(mutationRate * 0.9, minMR);
-                if (verbose)
+                if (previousMutationRate != mutationRate && verbose)
                     System.out.println("[DEC_MR] Mutation rate decreased to " + mutationRate);
             }
             else
@@ -51,9 +57,10 @@ public class GA_QBF_SC_AdaptiveMutation extends GA_QBF_SC
                 generationsWithoutImprovementsCounter++;
                 if (generationsWithoutImprovementsCounter >= generationsWithoutImprovementMax)
                 {
+                    double previousMutationRate = mutationRate;
                     mutationRate = Math.min(mutationRate * 1.5, maxMR);
                     generationsWithoutImprovementsCounter = 0;
-                    if (verbose)
+                    if (previousMutationRate != mutationRate && verbose)
                         System.out.println("[INC_MR] Mutation rate increased to " + mutationRate);
                 }
             }
@@ -64,6 +71,10 @@ public class GA_QBF_SC_AdaptiveMutation extends GA_QBF_SC
                 System.out.println("[TIME] Timeout after " + timeoutInSeconds + "s");
                 break;
             }
+        }
+
+        if (!ObjFunction.isFeasible(bestSol)) {
+            throw new RuntimeException("No feasible solution found.");
         }
  
         return bestSol;

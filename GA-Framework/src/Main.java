@@ -32,7 +32,7 @@ public class Main {
         logger.info("Number of parameter configurations: " + parameters.length);
 
         // Create a thread pool with 5 threads (one for each parameter configuration)
-        ExecutorService executor = Executors.newFixedThreadPool(3);
+        ExecutorService executor = Executors.newFixedThreadPool(5);
 
         for (String instance : instances) {
             logger.info("Processing instance: " + instance);
@@ -44,11 +44,10 @@ public class Main {
             for (InstanceParameters param : parameters) {
                 Future<Void> future = executor.submit(() -> {
                     try {
-                        GA_QBF_SC solver = param.createSolver(instance, logger);
-                        long startTime = System.currentTimeMillis();
-
                         // Create a thread-safe log message prefix
-                        String logPrefix = "[" + Thread.currentThread().getName() + "] Instance " + instance + " - ";
+                        String logPrefix = "[" + param.getAlias() + "] Instance " + instance + " - ";
+                        GA_QBF_SC solver = param.createSolver(instance, logger, logPrefix);
+                        long startTime = System.currentTimeMillis();
                         
                         synchronized (logger) {
                             logger.info(logPrefix + "Starting with parameters: " + param);
@@ -147,6 +146,7 @@ public class Main {
     protected static InstanceParameters[] listParameters() {
         Integer maxGenerations = Integer.MAX_VALUE; // Run until timeout
         Long timeoutInSeconds = 60L * 30L; // 30 minutes
+        // Long timeoutInSeconds = 60L * 2L; // 2 minutes
         Integer population1 = 100;
         Integer population2 = 1000;
         Double mutationRate1 = 1.0 / 100.0;
@@ -154,15 +154,15 @@ public class Main {
 
         return new InstanceParameters[] {
             // PADRÃO: população 100, mutação 1%, construção aleatória
-            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
+            new InstanceParameters("PADRAO", maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + POP: população 1000, mutação 1%, construção aleatória
-            new InstanceParameters(maxGenerations, population2, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
+            new InstanceParameters("PADRAO_POP", maxGenerations, population2, mutationRate1, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + MUT: população 100, mutação 10%, construção aleatória
-            new InstanceParameters(maxGenerations, population1, mutationRate2, timeoutInSeconds, StrategyEnum.RANDOM),
+            new InstanceParameters("PADRAO_MUT", maxGenerations, population1, mutationRate2, timeoutInSeconds, StrategyEnum.RANDOM),
             // PADRÃO + EVOL1 (Latin Hypercube): população 100, mutação 1%, construção alternativa 1
-            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL1),
+            new InstanceParameters("PADRAO_EVOL1", maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL1),
             // PADRÃO + EVOL2 (Adaptive Mutation): população 100, mutação 1%, construção alternativa 2
-            new InstanceParameters(maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL2),
+            new InstanceParameters("PADRAO_EVOL2", maxGenerations, population1, mutationRate1, timeoutInSeconds, StrategyEnum.EVOL2),
         };
     }
 }
@@ -179,16 +179,18 @@ class InstanceParameters {
     protected Double mutationRate;
     protected Long timeoutInSeconds;
     protected StrategyEnum strategy;
+    protected String alias;
 
-    public InstanceParameters(Integer maxGenerations, Integer populationSize, Double mutationRate, Long timeoutInSeconds, StrategyEnum strategy) {
+    public InstanceParameters(String alias, Integer maxGenerations, Integer populationSize, Double mutationRate, Long timeoutInSeconds, StrategyEnum strategy) {
         this.maxGenerations = maxGenerations;
         this.populationSize = populationSize;
         this.mutationRate = mutationRate;
         this.timeoutInSeconds = timeoutInSeconds;
         this.strategy = strategy;
+        this.alias = alias;
     }
 
-    public GA_QBF_SC createSolver(String filename, Logger logger) throws Exception {
+    public GA_QBF_SC createSolver(String filename, Logger logger, String logPrefix) throws Exception {
         GA_QBF_SC solver;
         if (strategy == StrategyEnum.RANDOM) {
             solver = new GA_QBF_SC(maxGenerations, populationSize, mutationRate, filename, timeoutInSeconds);
@@ -200,8 +202,13 @@ class InstanceParameters {
             throw new IllegalArgumentException("Unknown strategy: " + strategy);
         }
         solver.setLogger(logger);
+        solver.setLogPrefix(logPrefix);
         return solver;
     }
+
+        public String getAlias() {
+            return alias;
+        }
 
     @Override
     public String toString() {

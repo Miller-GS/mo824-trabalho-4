@@ -84,6 +84,8 @@ public abstract class AbstractGA<G extends Number, F> {
 
     protected Logger logger;
 
+    protected String logPrefix = "";
+
 	/**
 	 * Creates a new solution which is empty, i.e., does not contain any
 	 * candidate solution element.
@@ -153,6 +155,7 @@ public abstract class AbstractGA<G extends Number, F> {
 		this.mutationRate = mutationRate;
         this.timeoutInSeconds = timeoutInSeconds;
         this.logger = Logger.getLogger(AbstractGA.class.getName());
+        this.logPrefix = "";
 	}
 
 	/**
@@ -170,7 +173,7 @@ public abstract class AbstractGA<G extends Number, F> {
 
 		bestChromosome = getBestChromosome(population);
 		bestSol = decode(bestChromosome);
-		logger.info("(Gen. " + 0 + ") BestSol = " + bestSol);
+		logger.info(logPrefix + "(Gen. " + 0 + ") BestSol = " + bestSol);
 
         long startTime = System.currentTimeMillis();
 
@@ -195,12 +198,12 @@ public abstract class AbstractGA<G extends Number, F> {
 			if (bestSolCurrentGen.cost < bestSol.cost && ObjFunction.isFeasible(bestSolCurrentGen)) {
 				bestSol = bestSolCurrentGen;
 				if (verbose)
-					logger.info("(Gen. " + currentGeneration + ") BestSol = " + bestSol);
+					logger.info(logPrefix + "(Gen. " + currentGeneration + ") BestSol = " + bestSol);
 			}
             
             long currentTime = System.currentTimeMillis();
             if (timeoutInSeconds != null && (currentTime - startTime) >= timeoutInSeconds * 1000) {
-                logger.warning("Timeout reached after " + timeoutInSeconds + " seconds.");
+                logger.warning(logPrefix + "Timeout reached after " + timeoutInSeconds + " seconds.");
                 break;
             }
 		}
@@ -214,6 +217,10 @@ public abstract class AbstractGA<G extends Number, F> {
 
     public void setLogger(Logger logger) {
         this.logger = logger;
+    }
+
+    public void setLogPrefix(String logPrefix) {
+        this.logPrefix = logPrefix;
     }
     
 
