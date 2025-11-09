@@ -36,8 +36,6 @@ public class GA_Satisfactory_LHS extends GA_Satisfactory {
 
             for (int ind = 0; ind < popSize; ind++) {
                 double u = rng.nextDouble();
-                double v = (strata.get(ind) + u) / ((double) popSize);
-
                 double value = (strata.get(ind) + rng.nextDouble()) / ((double) popSize);
                 population.get(ind).add(value);
             }
@@ -45,4 +43,5 @@ public class GA_Satisfactory_LHS extends GA_Satisfactory {
 
         return population;
     }
+
 }
