@@ -35,7 +35,6 @@ public class GA_Satisfactory_LHS extends GA_Satisfactory {
             Collections.shuffle(strata, rng);
 
             for (int ind = 0; ind < popSize; ind++) {
-                double u = rng.nextDouble();
                 double value = (strata.get(ind) + rng.nextDouble()) / ((double) popSize);
                 population.get(ind).add(value);
             }
