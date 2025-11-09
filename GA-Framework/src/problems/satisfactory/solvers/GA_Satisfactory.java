@@ -60,13 +60,14 @@ public class GA_Satisfactory extends AbstractGA<Double, Double>
         double penalty = satisfactoryProblem.computePenalty(sol);
 
         // Control dynamic penalty
-        double basePenalty = 3.0;      // K0, may be adjusted if needed
-        // Considerations about basePenalty: considering the scale of solutions cost (that represents number of machines utilized, which may be 10 - 100), this may be small
-        // If needed, we can reconsider this value and increase it to something like 5.0 or 10.0 (if cost starts scaling too much and too fast)
+        double basePenalty = 6.0;      // K0, may be adjusted if needed
+        // Considerations about basePenalty: considering the scale of solutions cost (that represents number of machines utilized, which may be 10 - 100), this could be "small"
+        // If needed, we can reconsider this value and increase it to something like 10.0 or 13.0 (if cost starts scaling too much and too fast) or decrease to 2.0 or 3.0
+        // (if penaltys are being too harsh and no feasible solutions are being found)
 
-        double growthRate = 9.0;        // α, may be adjusted if needed
-        // Considerations about growthRate: this value controls how fast the penalty grows. It follows the formula: 1 + α, meaning if this value is 9,
-        // then at max generation the penalty will be 10 times the base penalty.
+        double growthRate = 5.0;        // α, may be adjusted if needed
+        // Considerations about growthRate: this value controls how fast the penalty grows. It follows the formula: 1 + α, meaning if this value is 5,
+        // then at max generation the penalty will be 6 times the base penalty.
 
         double generationFactor = 1.0 + growthRate * (currentGeneration / (double) generations);
         double currentPenalty = basePenalty * generationFactor;
