@@ -9,6 +9,10 @@ public class GA_Satisfactory extends AbstractGA<Double, Double>
 {
     private Satisfactory satisfactoryProblem;
 
+    // Defining mutation strategy as the Gaussian with inversion
+    private final MutationStrategy mutation = new MutationStrategy();
+    private final MutationStrategy.Type mutationType = MutationStrategy.Type.GAUSSIAN_INVERSION;
+
     public GA_Satisfactory(int gens, int popSize, double mutRate, String filename, long timeout) throws IOException
     {
         super(new Satisfactory(filename), gens, popSize, mutRate, timeout);
@@ -39,11 +43,10 @@ public class GA_Satisfactory extends AbstractGA<Double, Double>
     }
 
     @Override
-    protected void mutateGene(Chromosome chromosome, Integer locus)
-    {
-        double val = chromosome.get(locus);
-        double mutated = val + rng.nextGaussian() * 0.1;
-        chromosome.set(locus, Math.max(0.0, Math.min(1.0, mutated)));
+    protected void mutateGene(Chromosome chromosome, Integer locus) {
+        double gene = chromosome.get(locus);
+        double mutated = mutation.mutateValue(gene, mutationType);
+        chromosome.set(locus, mutated);
     }
 
     @Override
